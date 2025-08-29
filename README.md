@@ -258,6 +258,9 @@ Consultor em Inteligência Financeira e Análise de Dados
 
 **Jefferson Firmino Mendes**
 Financial Intelligence and Data Analysis Consultant
+
+
+
 <br>📱 WhatsApp: [(83) 99625-8911](https://wa.me/5583996258911)
 <br>📧 Email: [jefferson.ds.consultoria@gmail.com](mailto:jefferson.ds.consultoria@gmail.com)
 <br>🌐 Website: [jfnegociospro.wixsite.com/consultoria](https://jfnegociospro.wixsite.com/consultoria)
