@@ -2,5 +2,6 @@ flask
 transformers
 torch
 boto3
+pytest #adding the respective test-cases to the project
 
 
