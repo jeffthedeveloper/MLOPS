@@ -38,6 +38,11 @@ USER appuser
 # Expose the port the app runs on
 EXPOSE 5000
 
+# Informate the system to search executables in this directory too
+
+ENV PATH="/home/appuser/.local/bin:$PATH"
+
+
 # Run the application using a production-ready WSGI server like Gunicorn
 # Add 'gunicorn' to your requirements.txt
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+CMD ["/home/appuser/.local/bin/gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
