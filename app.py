@@ -15,7 +15,7 @@ as it avoids the high cost of reloading the model on every API request.
 model_name = 'gpt2'
 
 print("Loading model...")
-model = GPT2LM-HeadModel.from_pretrained(model_name)
+model = GPT2LMHeadModel.from_pretrained(model_name)
 
 print("Loading tokenizer...")
 tokenizer = GPT2Tokenizer.from_pretrained(model_name)
