@@ -45,4 +45,4 @@ ENV PATH="/home/appuser/.local/bin:$PATH"
 
 # Run the application using a production-ready WSGI server like Gunicorn
 # Add 'gunicorn' to your requirements.txt
-CMD ["/home/appuser/.local/bin/gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
