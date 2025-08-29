@@ -247,9 +247,9 @@ The `GPT2LMHeadModel` is more than just a black box. Its operation is based on t
 **Jefferson Firmino Mendes**
 Consultor em Inteligência Financeira e Análise de Dados
 
-📱 WhatsApp: [(83) 99625-8911](https://wa.me/5583996258911)
-📧 Email: [jefferson.ds.consultoria@gmail.com](mailto:jefferson.ds.consultoria@gmail.com)
-🌐 Website: [jfnegociospro.wixsite.com/consultoria](https://jfnegociospro.wixsite.com/consultoria)
+<br>📱 WhatsApp: [(83) 99625-8911](https://wa.me/5583996258911)
+<br>📧 Email: [jefferson.ds.consultoria@gmail.com](mailto:jefferson.ds.consultoria@gmail.com)
+<br>🌐 Website: [jfnegociospro.wixsite.com/consultoria](https://jfnegociospro.wixsite.com/consultoria)
 
 ---
 
@@ -258,8 +258,8 @@ Consultor em Inteligência Financeira e Análise de Dados
 
 **Jefferson Firmino Mendes**
 Financial Intelligence and Data Analysis Consultant
-📱 WhatsApp: [(83) 99625-8911](https://wa.me/5583996258911)
-📧 Email: [jefferson.ds.consultoria@gmail.com](mailto:jefferson.ds.consultoria@gmail.com)
-🌐 Website: [jfnegociospro.wixsite.com/consultoria](https://jfnegociospro.wixsite.com/consultoria)
+<br>📱 WhatsApp: [(83) 99625-8911](https://wa.me/5583996258911)
+<br>📧 Email: [jefferson.ds.consultoria@gmail.com](mailto:jefferson.ds.consultoria@gmail.com)
+<br>🌐 Website: [jfnegociospro.wixsite.com/consultoria](https://jfnegociospro.wixsite.com/consultoria)
 
 ---
