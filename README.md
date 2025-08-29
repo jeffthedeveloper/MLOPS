@@ -1,5 +1,15 @@
 [Português 🇧🇷](#português) | [English 🇬🇧](#english)
 
+
+### 💡 Insight Diário Gerado por IA 💡
+
+*Esta seção é atualizada automaticamente a cada 24 horas pela nossa pipeline de GitHub Actions, consumindo a própria API deste projeto.*
+
+**Prompt:** "Qual é uma reflexão interessante sobre a intersecção entre tecnologia e finanças?"
+
+**Resposta da IA:**
+*Aguardando a primeira execução da pipeline para gerar um insight...*
+
 # MLOps: Projeto de Geração de Texto com GPT-2
 
 [![Python Application CI](https://github.com/jeffthedeveloper/MLOPS/actions/workflows/ci.yml/badge.svg)](https://github.com/jeffthedeveloper/MLOPS/actions/workflows/ci.yml)

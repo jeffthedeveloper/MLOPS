@@ -6,6 +6,15 @@ from transformers import GPT2LMHeadModel, GPT2Tokenizer
 # Initialize the Flask application.
 app = Flask(__name__)
 
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """
+    Health check endpoint to verify that the service is running.
+    """
+    return jsonify({"status": "healthy"}), 200
+
+
 # --- Model and Tokenizer Loading ---
 """
 This section is executed only once when the application starts.
