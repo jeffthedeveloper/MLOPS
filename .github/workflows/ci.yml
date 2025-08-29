@@ -32,4 +32,6 @@ jobs:
     # The build will  fail automatically if any test fail O
     - name: Run tests with pytest
       run: |
+        export PYTHONPATH=.
         pytest tests/
+
