@@ -1,79 +1,63 @@
-# ===============================
 # Stage 1: Build base with dependencies
-# ===============================
 FROM python:3.8-slim-buster AS base
 
-# Evita prompts interativos durante apt-get
-ENV DEBIAN_FRONTEND=noninteractive
+# Switch to root to modify sources.list and install packages
+USER root
 
 WORKDIR /app
 
-# Instala dependências do sistema de forma segura
+# Replace sources.list with the official archive for Debian Buster (EOL)
+RUN echo "deb http://archive.debian.org/debian/ buster main" > /etc/apt/sources.list && \
+    echo "deb http://archive.debian.org/debian-security buster/updates main" >> /etc/apt/sources.list
+
+# Update, install dependencies, and clean up in a single layer
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
         libopenblas-dev \
         libomp-dev \
-        curl \
-        git \
-        apt-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Cria usuário não-root
+# Create and switch to a non-root user for security
 RUN useradd --create-home appuser
 USER appuser
 
-# Diretórios de cache do Hugging Face
+# Set environment variables for caching
 ENV TRANSFORMERS_CACHE=/home/appuser/.cache/huggingface \
     HF_HOME=/home/appuser/.cache/huggingface
 
-# Copia e instala dependências Python
+# Copy and install Python requirements
 COPY --chown=appuser:appuser requirements.txt .
-RUN pip install --upgrade pip --no-cache-dir && \
+RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Pré-baixa DistilGPT2 para evitar cold-start
-RUN python -c "\
-from transformers import AutoTokenizer, AutoModelForCausalLM; \
-MODEL_NAME='distilgpt2'; \
-AutoTokenizer.from_pretrained(MODEL_NAME); \
-AutoModelForCausalLM.from_pretrained(MODEL_NAME); \
-print('Prefetched model:', MODEL_NAME)\
-"
+# Pre-download the model to avoid cold starts
+RUN python -c "from transformers import AutoModelForCausalLM, AutoTokenizer; m='distilgpt2'; AutoModelForCausalLM.from_pretrained(m); AutoTokenizer.from_pretrained(m);"
 
-# ===============================
 # Stage 2: Final lean image
-# ===============================
 FROM python:3.8-slim-buster
 
 WORKDIR /app
 
-# Copia usuário e caches
+# Copy user and caches from the base stage
 COPY --from=base /etc/passwd /etc/passwd
 COPY --from=base /etc/group /etc/group
 COPY --from=base /home/appuser /home/appuser
-
-# Copia pacotes Python instalados
 COPY --from=base /usr/local/lib/python3.8/site-packages /usr/local/lib/python3.8/site-packages
 
-# Copia arquivos da aplicação
+# Copy application files
 COPY --chown=appuser:appuser . .
 
-# Usa usuário não-root
+# Switch to the non-root user
 USER appuser
 
-# Porta exposta
 EXPOSE 5000
 
-# Variáveis de ambiente, já configuradas para DistilGPT2
+# Set runtime environment variables
 ENV PATH="/home/appuser/.local/bin:$PATH" \
     TRANSFORMERS_CACHE=/home/appuser/.cache/huggingface \
     HF_HOME=/home/appuser/.cache/huggingface \
-    MODEL_NAME="distilgpt2" \
-    MAX_NEW_TOKENS=120 \
-    TEMPERATURE=0.8 \
-    TOP_P=0.95 \
-    NO_REPEAT_NGRAM=2
+    MODEL_NAME="distilgpt2"
 
-# Inicialização do Gunicorn
+# Start the application using Gunicorn
 CMD ["gunicorn", "--workers=2", "--threads=2", "--timeout=180", "--bind", "0.0.0.0:5000", "app:app"]
