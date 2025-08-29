@@ -59,5 +59,5 @@ ENV PATH="/home/appuser/.local/bin:$PATH" \
     HF_HOME=/home/appuser/.cache/huggingface \
     MODEL_NAME="distilgpt2"
 
-# Start the application using Gunicorn
-CMD ["gunicorn", "--workers=2", "--threads=2", "--timeout=180", "--bind", "0.0.0.0:5000", "app:app"]
+# Gunicorn tuned for low-memory environments
+CMD ["gunicorn", "--workers=1", "--threads=2", "--timeout=180", "--bind", "0.0.0.0:5000", "app:app"]
