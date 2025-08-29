@@ -59,53 +59,63 @@ Exemplo com `curl`:
 curl -X POST -H "Content-Type: application/json" \
      -d '{"prompt": "A inteligência artificial está transformando o mundo"}' \
      http://localhost:5000/generate
+```
+
+
 English 🇬🇧
-Description
+
+* Description
+
 This project implements a text generation service using the pre-trained GPT-2 model. It is designed with MLOps practices in mind, offering a web API built with Flask, containerized with Docker, and validated by a Continuous Integration (CI) pipeline with automated tests.
 
-Key Features
-Text Generation: Uses the GPT-2 model to generate text based on a user-provided prompt.
+* Key Features
 
-Flask Web API: Provides a /generate endpoint (via POST) for model interaction.
+  * Text Generation: Uses the GPT-2 model to generate text based on a user-provided prompt.
 
-Docker Containerization: Allows for consistent packaging and deployment.
+  * Flask Web API: Provides a /generate endpoint (via POST) for model interaction.
 
-Automated Testing: Includes unit and integration tests with pytest to ensure API quality and robustness.
+  * Docker Containerization: Allows for consistent packaging and deployment.
 
-Continuous Integration (CI): Uses GitHub Actions to automatically run tests on every code change.
+  * Automated Testing: Includes unit and integration tests with pytest to ensure API quality and robustness.
 
-Serverless Deployment (Optional): Provides a handler to deploy the functionality as an AWS Lambda function.
+  * Continuous Integration (CI): Uses GitHub Actions to automatically run tests on every code change.
 
-Technologies Used
-Python 3.8+
+  * Serverless Deployment (Optional): Provides a handler to deploy the functionality as an AWS Lambda function.
 
-Flask
+* Technologies Used
+  * Python 3.8+
 
-Hugging Face Transformers
+  * Flask
 
-Docker
+  * Hugging Face Transformers
 
-Pytest (for testing)
+* Docker
 
-GitHub Actions (for CI/CD)
+  * Pytest (for testing)
 
-AWS Lambda / Boto3
+  * GitHub Actions (for CI/CD)
 
-Installation and Usage
-Prerequisites
-Python 3.8 or higher
+  * AWS Lambda / Boto3
 
-Docker installed
+## Installation and Usage
 
-Running Locally with Docker
-Build the Docker image:
+### Prerequisites
 
-Bash
+* Python 3.8 or higher
+
+* Docker installed
+
+### Running Locally with Docker
+
+* Build the Docker image:
+
+```Bash
 
 docker build -t gpt2-text-generator .
 Run the Docker container:
+```
 
-Bash
+```Bash
 
 docker run -p 5000:5000 gpt2-text-generator
 The API will be accessible at http://localhost:5000.
@@ -113,6 +123,7 @@ The API will be accessible at http://localhost:5000.
 Using the API
 Send a POST request to http://localhost:5000/generate.
 Example using curl:
+```
 
 ```Bash
 
