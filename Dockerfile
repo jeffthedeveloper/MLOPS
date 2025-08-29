@@ -18,13 +18,8 @@ COPY --chown=appuser:appuser requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip &&         pip install --no-cache-dir -r requirements.txt
 
 # Pre-download DistilGPT2 to avoid cold-start network at runtime
-RUN python - << 'PY'
-from transformers import AutoTokenizer, AutoModelForCausalLM
-m = 'distilgpt2'
-AutoTokenizer.from_pretrained(m)
-AutoModelForCausalLM.from_pretrained(m)
-print('Prefetched model:', m)
-PY
+RUN python -c "from transformers import AutoTokenizer, AutoModelForCausalLM; m='distilgpt2'; AutoTokenizer.from_pretrained(m); AutoModelForCausalLM.from_pretrained(m); print('Prefetched model:', m)"
+
 
 # Stage 2: Final lean image
 FROM python:3.8-slim-buster
