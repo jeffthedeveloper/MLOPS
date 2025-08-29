@@ -1,47 +1,79 @@
+# ===============================
 # Stage 1: Build base with dependencies
+# ===============================
 FROM python:3.8-slim-buster AS base
+
+# Evita prompts interativos durante apt-get
+ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
-# System deps that help torch/transformers
-RUN apt-get update && apt-get install -y --no-install-recommends         build-essential         libopenblas-dev         libomp-dev         && rm -rf /var/lib/apt/lists/*
+# Instala dependências do sistema de forma segura
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        libopenblas-dev \
+        libomp-dev \
+        curl \
+        git \
+        apt-utils \
+    && rm -rf /var/lib/apt/lists/*
 
-# Non-root user
+# Cria usuário não-root
 RUN useradd --create-home appuser
 USER appuser
 
-# Caches live here for the appuser
-ENV TRANSFORMERS_CACHE=/home/appuser/.cache/huggingface         HF_HOME=/home/appuser/.cache/huggingface
+# Diretórios de cache do Hugging Face
+ENV TRANSFORMERS_CACHE=/home/appuser/.cache/huggingface \
+    HF_HOME=/home/appuser/.cache/huggingface
 
-# Copy requirements and install
+# Copia e instala dependências Python
 COPY --chown=appuser:appuser requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip &&         pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip --no-cache-dir && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Pre-download DistilGPT2 to avoid cold-start network at runtime
-RUN python -c "from transformers import AutoTokenizer, AutoModelForCausalLM; m='distilgpt2'; AutoTokenizer.from_pretrained(m); AutoModelForCausalLM.from_pretrained(m); print('Prefetched model:', m)"
+# Pré-baixa DistilGPT2 para evitar cold-start
+RUN python -c "\
+from transformers import AutoTokenizer, AutoModelForCausalLM; \
+MODEL_NAME='distilgpt2'; \
+AutoTokenizer.from_pretrained(MODEL_NAME); \
+AutoModelForCausalLM.from_pretrained(MODEL_NAME); \
+print('Prefetched model:', MODEL_NAME)\
+"
 
-
+# ===============================
 # Stage 2: Final lean image
+# ===============================
 FROM python:3.8-slim-buster
 
 WORKDIR /app
 
-# Copy user and caches
+# Copia usuário e caches
 COPY --from=base /etc/passwd /etc/passwd
 COPY --from=base /etc/group /etc/group
 COPY --from=base /home/appuser /home/appuser
 
-# Copy installed site-packages
+# Copia pacotes Python instalados
 COPY --from=base /usr/local/lib/python3.8/site-packages /usr/local/lib/python3.8/site-packages
 
-# App files
+# Copia arquivos da aplicação
 COPY --chown=appuser:appuser . .
 
+# Usa usuário não-root
 USER appuser
 
+# Porta exposta
 EXPOSE 5000
 
-ENV PATH="/home/appuser/.local/bin:$PATH"         TRANSFORMERS_CACHE=/home/appuser/.cache/huggingface         HF_HOME=/home/appuser/.cache/huggingface         MODEL_NAME="distilgpt2"         MAX_NEW_TOKENS=120         TEMPERATURE=0.8         TOP_P=0.95         NO_REPEAT_NGRAM=2
+# Variáveis de ambiente, já configuradas para DistilGPT2
+ENV PATH="/home/appuser/.local/bin:$PATH" \
+    TRANSFORMERS_CACHE=/home/appuser/.cache/huggingface \
+    HF_HOME=/home/appuser/.cache/huggingface \
+    MODEL_NAME="distilgpt2" \
+    MAX_NEW_TOKENS=120 \
+    TEMPERATURE=0.8 \
+    TOP_P=0.95 \
+    NO_REPEAT_NGRAM=2
 
-# Gunicorn tuned for slow model cold starts
+# Inicialização do Gunicorn
 CMD ["gunicorn", "--workers=2", "--threads=2", "--timeout=180", "--bind", "0.0.0.0:5000", "app:app"]
