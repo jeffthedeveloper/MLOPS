@@ -1,10 +1,10 @@
 name: Python Application CI
-# Triggers: This pipeline runs on pushes and pull requests to the 'main' branch.
+# Triggers: This pipeline runs on pushes and pull requests to the 'Main' branch.
 on:
   push:
-    branches: [ main ]
+    branches: [ Main ]
   pull_request:
-    branches: [ main ]
+    branches: [ Main ]
 
 jobs:
   build-and-test:
