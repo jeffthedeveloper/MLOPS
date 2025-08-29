@@ -1,6 +1,5 @@
 name: Update README with AI Insight
 
-# Gatilhos: Roda todo dia à 1h da manhã UTC e também permite execução manual
 on:
   schedule:
     - cron: '0 1 * * *'
@@ -21,53 +20,64 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run update script
+      - name: Create update script
         run: |
-          python -c "
-import os
-import requests
-import re
+          cat << 'EOF' > update_script.py
+          import os
+          import requests
+          import re
 
-API_URL = os.getenv('API_URL')
-README_FILE = 'README.md'
-prompt_text = 'Qual é uma reflexão interessante sobre a intersecção entre tecnologia e finanças?'
+          API_URL = os.getenv('API_URL')
+          README_FILE = 'README.md'
+          prompt_text = 'Qual é uma reflexão interessante sobre a intersecção entre tecnologia e finanças?'
 
-print(f'Calling API at {API_URL}...')
-response = requests.post(API_URL, json={'prompt': prompt_text})
-response.raise_for_status()
+          print(f"Calling API at {API_URL}...")
+          try:
+              response = requests.post(API_URL, json={'prompt': prompt_text}, timeout=60)
+              response.raise_for_status()
 
-ai_response_text = response.json().get('response', '').replace(prompt_text, '').strip()
+              data = response.json()
+              ai_response_text = data.get('response', '').replace(prompt_text, '').strip()
 
-if not ai_response_text:
-    print('No valid response from AI.')
-    exit()
+              if not ai_response_text:
+                  print('No valid response from AI.')
+                  exit(1)
 
-print(f'AI Response: {ai_response_text}')
+              print(f'AI Response: {ai_response_text}')
 
-with open(README_FILE, 'r', encoding='utf-8') as f:
-    readme_content = f.read()
+              with open(README_FILE, 'r', encoding='utf-8') as f:
+                  readme_content = f.read()
 
-new_readme_content = re.sub(
-    r'()(.*)()',
-    f'\\1\n> {ai_response_text}\n\\3',
-    readme_content,
-    flags=re.DOTALL
-)
+              new_readme_content = re.sub(
+                  r'()(.*)()',
+                  f'\\1\n> {ai_response_text}\n\\3',
+                  readme_content,
+                  flags=re.DOTALL
+              )
 
-with open(README_FILE, 'w', encoding='utf-8') as f:
-    f.write(new_readme_content)
+              with open(README_FILE, 'w', encoding='utf-8') as f:
+                  f.write(new_readme_content)
 
-print('README.md updated successfully.')
-"
+              print('README.md updated successfully.')
+
+          except requests.exceptions.RequestException as e:
+              print(f"Error calling API: {e}")
+              exit(1)
+          EOF
+
+      - name: Execute update script
         env:
-          # URL da sua API de MLOps em produção no Render
           API_URL: https://mlops-l86d.onrender.com/generate
+        run: python update_script.py
 
       - name: Commit and push changes
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add README.md
-          # Só faz o commit se houver alterações
-          git diff --staged --quiet || git commit -m 'docs: Update README with new AI insight'
-          git push
+          if ! git diff --staged --quiet; then
+            git commit -m 'docs: Update README with new AI insight'
+            git push
+          else
+            echo "No changes to commit."
+          fi
