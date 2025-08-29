@@ -1,37 +1,37 @@
 name: Python Application CI
-# Triggers: This pipeline runs on pushes and pull requests to the 'Main' branch.
+
 on:
   push:
-    branches: [ Main ]
+    branches: [ main ]
   pull_request:
-    branches: [ Main ]
+    branches: [ main ]
 
 jobs:
   build-and-test:
-    # The virtual machinne where's the job will be executed
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: runs the code repository checkout
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    # Step 2: Configure the Python Enviroment
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.8
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+          cache: 'pip'
 
-    # Step 3: Install the project dependencies
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8
 
-    # Step 4: Run testes with pytest
-    # The build will  fail automatically if any test fail O
-    - name: Run tests with pytest
-      run: |
-        export PYTHONPATH=.
-        pytest tests/
+      - name: Lint with flake8
+        run: flake8 . --ignore=E501,W503
 
+      - name: Run tests with pytest (fake model to avoid heavy downloads)
+        env:
+          FAKE_MODEL: "1"
+        run: |
+          export PYTHONPATH=.
+          pytest -q

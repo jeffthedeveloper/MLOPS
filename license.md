@@ -1,17 +1,6 @@
-## Licença do Projeto Atual
-Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.
-```"
-
-A licença MIT é uma escolha comum, permissiva e simples. Se você optar pela licença MIT, o conteúdo do seu arquivo `LICENSE.md` seria o seguinte. Lembre-se de substituir `[year]` pelo ano atual (2025) e `[fullname]` pelo seu nome completo.
-
-**Por favor, confirme se a Licença MIT é a sua escolha. Se desejar outra licença (como Apache 2.0, GPLv3, etc.), me informe para que eu possa fornecer o texto correspondente.**
-
-Assumindo que você queira prosseguir com a Licença MIT, conforme exemplificado, aqui está o conteúdo para o seu `LICENSE.md`:
-
-```markdown
 MIT License
 
-Copyright (c) 2025 Jefferson Firmino Mendes
+Copyright (c) 2025 [Seu Nome]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

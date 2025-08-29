@@ -1,0 +1,75 @@
+name: Update README with AI Insight
+
+on:
+  schedule:
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Create update script
+        run: |
+          cat << 'EOF' > update_script.py
+          import os, requests, re
+
+          API_URL = os.getenv('API_URL')
+          README_FILE = 'README.md'
+          prompt_text = 'Qual é uma reflexão interessante sobre a intersecção entre tecnologia e finanças?'
+
+          if not API_URL:
+              print('API_URL env var not set.')
+              raise SystemExit(1)
+
+          print(f"Calling API at {API_URL}...")
+          try:
+              r = requests.post(API_URL, json={'prompt': prompt_text}, timeout=60)
+              r.raise_for_status()
+              data = r.json()
+              ai_response_text = (data.get('response') or '').replace(prompt_text, '').strip()
+              if not ai_response_text:
+                  print('No valid response from AI.')
+                  raise SystemExit(1)
+          except requests.RequestException as e:
+              print(f"Error calling API: {e}")
+              raise SystemExit(1)
+
+          with open(README_FILE, 'r', encoding='utf-8') as f:
+              readme = f.read()
+
+          block = f"<!-- AI-INSIGHT-START -->\n> {ai_response_text}\n<!-- AI-INSIGHT-END -->"
+          new_readme = re.sub(r'<!-- AI-INSIGHT-START -->.*?<!-- AI-INSIGHT-END -->', block, readme, flags=re.DOTALL)
+
+          with open(README_FILE, 'w', encoding='utf-8') as f:
+              f.write(new_readme)
+
+          print('README.md updated successfully.')
+          EOF
+
+      - name: Execute update script
+        env:
+          API_URL: https://mlops-l86d.onrender.com/generate
+        run: python update_script.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add README.md
+          if ! git diff --staged --quiet; then
+            git commit -m 'docs: Update README with new AI insight'
+            git push
+          else
+            echo "No changes to commit."
